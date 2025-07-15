@@ -12,6 +12,10 @@ use plonky2_u32::gadgets::arithmetic_u32::{CircuitBuilderU32, U32Target};
 use crate::gadgets::biguint::BigUintTarget;
 use crate::gadgets::nonnative::NonNativeTarget;
 
+const BITS: usize = 29usize; // keep constant
+// removed alias; use BigUintTarget<BITS> directly
+
+
 pub trait CircuitBuilderSplit<F: RichField + Extendable<D>, const D: usize> {
     fn split_u32_to_4_bit_limbs(&mut self, val: U32Target) -> Vec<Target>;
 
@@ -43,7 +47,6 @@ impl<F: RichField + Extendable<D>, const D: usize> CircuitBuilderSplit<F, D>
             .tuples()
             .map(|(&a, &b)| self.mul_add(b, four, a))
             .collect();
-
         combined_limbs
     }
 
@@ -54,7 +57,7 @@ impl<F: RichField + Extendable<D>, const D: usize> CircuitBuilderSplit<F, D>
         val.value
             .limbs
             .iter()
-            .flat_map(|&l| self.split_u32_to_4_bit_limbs(l))
+            .flat_map(|&l| self.split_u32_to_4_bit_limbs(U32Target(l)))
             .collect()
     }
 
@@ -65,7 +68,7 @@ impl<F: RichField + Extendable<D>, const D: usize> CircuitBuilderSplit<F, D>
         val.value
             .limbs
             .iter()
-            .flat_map(|&l| self.split_le_base::<4>(l.0, 16))
+            .flat_map(|&l| self.split_le_base::<4>(l, 16))
             .collect()
     }
 
@@ -83,12 +86,12 @@ impl<F: RichField + Extendable<D>, const D: usize> CircuitBuilderSplit<F, D>
                     let (low, _high) = self.mul_add_u32(combined_chunk, base, U32Target(chunk[i]));
                     combined_chunk = low;
                 }
-                combined_chunk
+                combined_chunk.0
             })
             .collect();
 
         NonNativeTarget {
-            value: BigUintTarget { limbs: u32_limbs },
+            value: BigUintTarget::<BITS> { limbs: u32_limbs },
             _phantom: PhantomData,
         }
     }

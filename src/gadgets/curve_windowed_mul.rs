@@ -18,6 +18,7 @@ use crate::gadgets::curve::{AffinePointTarget, CircuitBuilderCurve};
 use crate::gadgets::nonnative::{CircuitBuilderNonNative, NonNativeTarget};
 use crate::gadgets::split_nonnative::CircuitBuilderSplit;
 
+const BITS: usize = 29;
 const WINDOW_SIZE: usize = 4;
 
 pub trait CircuitBuilderWindowedMul<F: RichField + Extendable<D>, const D: usize> {
@@ -75,30 +76,30 @@ impl<F: RichField + Extendable<D>, const D: usize> CircuitBuilderWindowedMul<F, 
         access_index: Target,
         v: Vec<AffinePointTarget<C>>,
     ) -> AffinePointTarget<C> {
-        let num_limbs = C::BaseField::BITS / 32;
-        let zero = self.zero_u32();
+        let num_limbs = (C::BaseField::BITS + BITS - 1) / BITS;
+        let zero = self.zero();
         let x_limbs: Vec<Vec<_>> = (0..num_limbs)
             .map(|i| {
                 v.iter()
-                    .map(|p| p.x.value.limbs.get(i).unwrap_or(&zero).0)
+                    .map(|p| *p.x.value.limbs.get(i).unwrap_or(&zero))
                     .collect()
             })
             .collect();
         let y_limbs: Vec<Vec<_>> = (0..num_limbs)
             .map(|i| {
                 v.iter()
-                    .map(|p| p.y.value.limbs.get(i).unwrap_or(&zero).0)
+                    .map(|p| *p.y.value.limbs.get(i).unwrap_or(&zero))
                     .collect()
             })
             .collect();
 
         let selected_x_limbs: Vec<_> = x_limbs
             .iter()
-            .map(|limbs| U32Target(self.random_access(access_index, limbs.clone())))
+            .map(|limbs| self.random_access(access_index, limbs.iter().map(|el| *el).collect()))
             .collect();
         let selected_y_limbs: Vec<_> = y_limbs
             .iter()
-            .map(|limbs| U32Target(self.random_access(access_index, limbs.clone())))
+            .map(|limbs| self.random_access(access_index, limbs.iter().map(|el| *el).collect()))
             .collect();
 
         let x = NonNativeTarget {

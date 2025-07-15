@@ -121,7 +121,7 @@ impl<F: RichField + Extendable<D>, const D: usize> SimpleGenerator<F, D>
     }
 
     fn dependencies(&self) -> Vec<Target> {
-        self.k.value.limbs.iter().map(|l| l.0).collect()
+        self.k.value.limbs.iter().map(|l| *l).collect()
     }
 
     fn run_once(

@@ -1,5 +1,7 @@
 #![allow(clippy::needless_range_loop)]
-#![cfg_attr(not(test), no_std)]
+#![feature(get_many_mut)]
+#![feature(trait_alias)]
+//#![cfg_attr(not(test), no_std)]
 
 extern crate alloc;
 

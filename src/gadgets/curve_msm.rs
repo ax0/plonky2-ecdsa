@@ -93,7 +93,6 @@ mod tests {
     use crate::gadgets::curve::CircuitBuilderCurve;
     use crate::gadgets::curve_msm::curve_msm_circuit;
     use crate::gadgets::nonnative::CircuitBuilderNonNative;
-
     #[test]
     #[ignore]
     fn test_curve_msm() -> Result<()> {
