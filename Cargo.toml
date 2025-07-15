@@ -9,14 +9,18 @@ edition = "2021"
 parallel = ["plonky2_maybe_rayon/parallel", "plonky2/parallel"]
 
 [dependencies]
+num-bigint = "0.4.6"
 anyhow = { version = "1.0.40", default-features = false }
 itertools = { version = "0.10.0", default-features = false }
 num = { version = "0.4.0", default-features = false }
 plonky2 = { git = "https://github.com/0xPolygonZero/plonky2" }
 plonky2_maybe_rayon = { git = "https://github.com/0xPolygonZero/plonky2" }  
 plonky2_u32 = { git = "https://github.com/ax0/plonky2-u32" }
+plonky2_gate_utils = { git = "https://github.com/dgulotta/plonky2-gate-utils.git" }
 rand = "0.8.4"
 serde = { version = "1.0", default-features = false, features = ["derive"] }
+static_assertions = "1.1.0"
 
 [dev-dependencies]
 rand = { version = "0.8.4", default-features = false, features = ["getrandom"] }
+num-bigint = { version = "0.4.6", features = ["rand"] }
